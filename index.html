@@ -120,7 +120,7 @@
             font-size: 1rem;
         }
 
-        /* Dashboard Section */
+        /* Dashboard Section - UPDATED */
         .dashboard-container {
             background-color: white;
             border-radius: 12px;
@@ -131,19 +131,19 @@
             position: relative;
         }
 
-        .dashboard-image {
+        .dashboard-preview {
             width: 100%;
             height: auto;
-            border: none;
-            transition: all 0.3s ease;
+            display: block;
             cursor: pointer;
+            transition: all 0.3s ease;
         }
 
-        .dashboard-image:hover {
-            opacity: 0.95;
+        .dashboard-preview:hover {
+            opacity: 0.9;
         }
 
-        .fullscreen-toggle {
+        .view-button {
             position: absolute;
             top: 10px;
             right: 10px;
@@ -161,25 +161,55 @@
             transition: all 0.3s ease;
         }
 
-        .fullscreen-toggle:hover {
+        .view-button:hover {
             background-color: var(--accent-color);
             transform: translateY(-2px);
         }
 
-        .dashboard-container.fullscreen {
+        /* Fullscreen Modal */
+        .modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
             z-index: 1000;
-            border-radius: 0;
-            margin-bottom: 0;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
         }
 
-        .dashboard-container.fullscreen .dashboard-image {
-            height: 100%;
-            object-fit: contain;
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            position: relative;
+            max-width: 90%;
+            max-height: 90%;
+        }
+
+        .modal-image {
+            max-width: 100%;
+            max-height: 80vh;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .close-button {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            background: none;
+            border: none;
         }
 
         /* Key Metrics Section */
@@ -452,7 +482,7 @@
             color: #666;
         }
 
-        /* Social Links */
+        /* Social Links - UPDATED with website link */
         .social-links {
             display: flex;
             gap: 20px;
@@ -480,6 +510,7 @@
         .linkedin { background-color: #0077B5; }
         .github { background-color: #333; }
         .gmail { background-color: #D14836; }
+        .website { background-color: #4CAF50; } /* Green for website */
         .social-links i {
             font-size: 24px;
             transition: transform 0.3s ease;
@@ -506,6 +537,16 @@
 
             .hospital-logo {
                 height: 40px;
+            }
+
+            /* Mobile optimization for modal */
+            .modal-content {
+                max-width: 95%;
+                max-height: 95%;
+            }
+            
+            .modal-image {
+                max-height: 70vh;
             }
         }
 
@@ -765,13 +806,22 @@
             </div>
         </div>
 
-        <div class="dashboard-container" id="dashboard-container">
-            <button class="fullscreen-toggle" id="fullscreen-toggle">
-                <i class="fas fa-expand"></i> Fullscreen
+        <!-- Dashboard Image - UPDATED -->
+        <div class="dashboard-container">
+            <button class="view-button" id="view-button">
+                <i class="fas fa-expand"></i> View Full Dashboard
             </button>
-            <a href="Hospital_ER_Dashboard_Anirudh.xlsx" download="Hospital_ER_Dashboard_Anirudh.xlsx">
-                <img src="/img/regency_logo.png" alt="Hospital ER Excel Dashboard" class="dashboard-image">
-            </a>
+            <img src="img/Dashboard_Regency.png" alt="Hospital ER Dashboard Preview" class="dashboard-preview" id="dashboard-preview">
+        </div>
+
+        <!-- Fullscreen Modal - NEW -->
+        <div class="modal-overlay" id="modal-overlay">
+            <div class="modal-content">
+                <button class="close-button" id="close-button">
+                    <i class="fas fa-times"></i>
+                </button>
+                <img src="img/Dashboard_regency.jpg" alt="Hospital ER Dashboard Full View" class="modal-image">
+            </div>
         </div>
 
         <!-- Dashboard Insights Sections - Tailored for Consulting Role -->
@@ -930,7 +980,7 @@
             </div>
         </section>
 
-        <!-- Social Links -->
+        <!-- Social Links - UPDATED with website -->
         <div class="social-links">
             <a href="https://www.linkedin.com/in/yourprofile" class="linkedin" target="_blank" title="LinkedIn">
                 <i class="fab fa-linkedin"></i>
@@ -940,6 +990,9 @@
             </a>
             <a href="mailto:your.email@example.com" class="gmail" title="Gmail">
                 <i class="fas fa-envelope"></i>
+            </a>
+            <a href="https://anirudhchaudhary.netlify.app/" class="website" target="_blank" title="Personal Website">
+                <i class="fas fa-globe"></i>
             </a>
         </div>
     </div>
@@ -954,7 +1007,7 @@
         <!-- Blinkit Project Container -->
         <div class="blinkit-project-container" id="blinkitProjectContainer">
             <div class="blinkit-project-header">
-                <img src="/img/Blinkit_logo_upscayl.png" alt="Blinkit Logo" class="blinkit-logo">
+                <img src="img/Blinkit_logo_upscayl.png" alt="Blinkit Logo" class="blinkit-logo">
                 <div class="blinkit-project-title">Blinkit Operations Dashboard</div>
             </div>
             <div class="blinkit-project-content">
@@ -999,42 +1052,48 @@
                 });
             });
 
-            // Fullscreen toggle functionality
-            const dashboardContainer = document.getElementById('dashboard-container');
-            const fullscreenToggle = document.getElementById('fullscreen-toggle');
-            
-            fullscreenToggle.addEventListener('click', () => {
-                dashboardContainer.classList.toggle('fullscreen');
-                
-                if (dashboardContainer.classList.contains('fullscreen')) {
-                    fullscreenToggle.innerHTML = '<i class="fas fa-compress"></i> Exit Fullscreen';
-                } else {
-                    fullscreenToggle.innerHTML = '<i class="fas fa-expand"></i> Fullscreen';
+            // Fullscreen modal functionality
+            const viewButton = document.getElementById('view-button');
+            const dashboardPreview = document.getElementById('dashboard-preview');
+            const modalOverlay = document.getElementById('modal-overlay');
+            const closeButton = document.getElementById('close-button');
+
+            function openModal() {
+                modalOverlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeModal() {
+                modalOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+
+            viewButton.addEventListener('click', openModal);
+            dashboardPreview.addEventListener('click', openModal);
+            closeButton.addEventListener('click', closeModal);
+            modalOverlay.addEventListener('click', (e) => {
+                if (e.target === modalOverlay) {
+                    closeModal();
                 }
             });
 
-            // Improved number counting animation with easing and repeating
-            function animateValue(id, start, end, duration, isDecimal = false) {
-                const obj = document.getElementById(id);
+            // Close modal with Escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    closeModal();
+                }
+            });
+
+            // Animate metric counters
+            function animateValue(element, start, end, duration, isPercent = false) {
+                const obj = document.getElementById(element);
                 let startTimestamp = null;
-                
-                // Easing function for smooth animation
-                const easeOutQuad = (t) => t * (2 - t);
                 
                 const step = (timestamp) => {
                     if (!startTimestamp) startTimestamp = timestamp;
                     const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-                    const easedProgress = easeOutQuad(progress);
-                    
-                    let value;
-                    if (isDecimal) {
-                        value = (easedProgress * (end - start) + start).toFixed(1);
-                    } else {
-                        value = Math.floor(easedProgress * (end - start) + start);
-                    }
-                    
-                    obj.innerHTML = value;
-                    
+                    const value = Math.floor(progress * (end - start) + start);
+                    obj.textContent = isPercent ? `${value}%` : value;
                     if (progress < 1) {
                         window.requestAnimationFrame(step);
                     }
@@ -1042,63 +1101,18 @@
                 window.requestAnimationFrame(step);
             }
 
-            // Text typing animation for "General Practice"
-            function typeWriter(element, text, speed) {
-                let i = 0;
-                element.innerHTML = ''; // Clear before typing
-                function typing() {
-                    if (i < text.length) {
-                        element.innerHTML += text.charAt(i);
-                        i++;
-                        setTimeout(typing, speed);
-                    }
-                }
-                typing();
-            }
-
-            // Function to run all animations
-            function runAllAnimations() {
-                // Animate numbers with smoother easing
-                animateValue('total-patients', 0, 991, 1500);
-                animateValue('avg-wait', 0, 35.5, 1200, true);
-                animateValue('admission-rate', 0, 50, 800);
-                
-                // Animate text
-                const topDeptElement = document.getElementById('top-department');
-                typeWriter(topDeptElement, 'General Practice', 100);
-            }
-
             // Start animations when metrics come into view
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
-                        // Run animations immediately
-                        runAllAnimations();
-                        
-                        // Set up repeating every 6 seconds
-                        const repeatInterval = setInterval(runAllAnimations, 6000);
-                        
-                        // Stop observing after first animation
-                        observer.unobserve(entry.target);
-                        
-                        // Clean up interval when element leaves view
-                        const leaveObserver = new IntersectionObserver((leaveEntries) => {
-                            leaveEntries.forEach(leaveEntry => {
-                                if (!leaveEntry.isIntersecting) {
-                                    clearInterval(repeatInterval);
-                                    leaveObserver.unobserve(leaveEntry.target);
-                                }
-                            });
-                        }, { threshold: 0 });
-                        
-                        leaveObserver.observe(entry.target);
+                        animateValue('total-patients', 0, 991, 1500);
+                        animateValue('avg-wait', 0, 35.5, 1500);
+                        animateValue('admission-rate', 0, 50, 1500, true);
                     }
                 });
             }, { threshold: 0.5 });
 
-            // Observe the metrics container
-            const metricsContainer = document.querySelector('.metrics-container');
-            observer.observe(metricsContainer);
+            observer.observe(document.querySelector('.metrics-container'));
 
             // Projects Showcase System
             const masterToggle = document.getElementById('masterToggle');
@@ -1129,7 +1143,7 @@
                         i++;
                         setTimeout(typing, speed);
                     } else if (callback) {
-                        setTimeout(callback, 1000); // Wait 1 second before deleting
+                        setTimeout(callback, 1000);
                     }
                 }
                 
@@ -1155,14 +1169,12 @@
 
             function animateToggleText() {
                 typeWriterWithCallback(toggleText, toggleTexts[currentToggleIndex], 50, () => {
-                    // After typing completes, wait then delete
                     setTimeout(() => {
                         deleteText(toggleText, 30, () => {
-                            // After deleting completes, move to next text
                             currentToggleIndex = (currentToggleIndex + 1) % toggleTexts.length;
-                            setTimeout(animateToggleText, 500); // Short pause before next cycle
+                            setTimeout(animateToggleText, 500);
                         });
-                    }, 1000); // Show completed text for 1 second before deleting
+                    }, 1000);
                 });
             }
 
